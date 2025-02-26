@@ -14,23 +14,30 @@
 
 FROM quay.io/pangeo/pytorch-notebook:2025.01.24
 
-USER ${NB_USER}
-
-
 # Update pip and setuptools
 RUN python -m pip install --upgrade pip setuptools 
 RUN python -m pip install jupyterlab-nvidia-nsight
 
-# Setup git lfs, graphviz gl1(vtk dep)
+COPY apt.txt /tmp/apt.txt
+
+USER root
+
 RUN apt-get update && \
-    apt-get install -y git-lfs graphviz libgl1 && \
-    git lfs install && \
-    pip install torchviz
+    xargs -a /tmp/apt.txt apt install -y && \
+    apt-get autoremove -y && \
+    apt-get autoclean && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm /tmp/apt.txt
+
+USER ${NB_USER}
+
+RUN git lfs install
+RUN python -m pip install torchviz
+
 
 SHELL ["/bin/bash", "-c"]
 
-RUN git clone -b gpu-codecs https://github.com/akshaysubr/zarr-python.git /opt/zarr-python && \
-    cd /opt/zarr-python && \
-    pip install .[gpu]
+RUN python -m pip install "zarr[gpu] @ git+https://github.com/akshaysubr/zarr-python.git"
+
 
 ENV _CUDA_COMPAT_TIMEOUT=90
