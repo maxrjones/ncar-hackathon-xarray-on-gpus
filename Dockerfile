@@ -16,9 +16,6 @@ FROM quay.io/pangeo/pytorch-notebook:2025.01.24
 
 USER ${NB_USER}
 
-ADD environment.yml environment.yml
-
-RUN mamba env update --prefix /srv/conda/envs/notebook --file environment.yml
 
 # Update pip and setuptools
 RUN python -m pip install --upgrade pip setuptools 
