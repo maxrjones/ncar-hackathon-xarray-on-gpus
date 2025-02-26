@@ -12,11 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG PYT_VER=25.02
-FROM nvcr.io/nvidia/pytorch:$PYT_VER-py3 as builder
+FROM quay.io/pangeo/pytorch-notebook:2025.01.24
+
+USER ${NB_USER}
+
+ADD environment.yml environment.yml
+
+RUN mamba env update --prefix /srv/conda/envs/notebook --file environment.yml
 
 # Update pip and setuptools
-RUN pip install --upgrade pip setuptools  
+RUN python -m pip install --upgrade pip setuptools 
+RUN python -m pip install jupyterlab-nvidia-nsight
 
 # Setup git lfs, graphviz gl1(vtk dep)
 RUN apt-get update && \

@@ -10,4 +10,4 @@ dependencies:
   - pytorch~=2.6.0
   - segmentation-models-pytorch~=0.4.0
   - xarray>=2025.1.2
-  - zarr~=3.0.3
+  - zarr~=3.0.4
